@@ -1,17 +1,23 @@
-FROM openjdk:latest
+FROM openjdk:8
 MAINTAINER greggentling https://github.com/greggentling
 
 ENV PENTAHO_HOME /opt/pentaho
 
 
 RUN . /etc/environment
-ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64
-ENV PENTAHO_JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64
+#ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64
+#ENV PENTAHO_JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-amd64
+
+ENV JAVA_HOME /usr/local/openjdk-8
+ENV PENTAHO_JAVA_HOME /usr/local/openjdk-8
+
 
 # Install Dependences
 RUN apt-get update; apt-get install zip netcat postgresql-client -y; \
-    apt-get install wget unzip git vim cron libwebkitgtk-1.0-0 -y; \
+    apt-get install wget unzip git vim cron -y; \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+    #apt-get install wget unzip git vim cron libwebkitgtk-1.0-0 -y; \
 
 RUN mkdir ${PENTAHO_HOME}; useradd -s /bin/bash -d ${PENTAHO_HOME} pentaho; chown pentaho:pentaho ${PENTAHO_HOME}
 
@@ -26,7 +32,7 @@ RUN /usr/bin/unzip -q /tmp/pentaho-server.zip -d  $PENTAHO_HOME; \
 RUN rm -f /opt/pentaho/pentaho-server/promptuser.sh
 
 
-EXPOSE 8080
+EXPOSE 8080 9092
 
 COPY run_pentaho_server.sh /usr/local/bin
 RUN chmod +x /usr/local/bin/run_pentaho_server.sh
